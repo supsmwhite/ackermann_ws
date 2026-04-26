@@ -44,7 +44,8 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         parameters=[
-            {"robot_description": robot_description}
+            {"robot_description": robot_description},
+            {"use_sim_time": True}
         ],
         output="screen"
     )
@@ -62,13 +63,30 @@ def generate_launch_description():
         output="screen"
     )
 
-    delayed_spawn = TimerAction(
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager"
+        ],
+        output="screen"
+    )
+
+    delayed_spawn_entity = TimerAction(
         period=3.0,
         actions=[spawn_entity]
+    )
+
+    delayed_joint_state_broadcaster = TimerAction(
+        period=6.0,
+        actions=[joint_state_broadcaster_spawner]
     )
 
     return LaunchDescription([
         gazebo,
         robot_state_publisher,
-        delayed_spawn
+        delayed_spawn_entity,
+        delayed_joint_state_broadcaster
     ])
