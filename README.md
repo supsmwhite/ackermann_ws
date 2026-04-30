@@ -118,6 +118,40 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.3}, angular: {z:
 ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.0}, angular: {z: 0.0}}"
 ```
 
+## Keyboard Teleop
+
+可以使用 `teleop_twist_keyboard` 发布 `/cmd_vel`，再由 `cmd_vel_to_ackermann.py` 转换成 Ackermann 小车的前轮转角和后轮速度。
+
+1. 启动控制版 Gazebo：
+
+```bash
+ros2 launch ackermann_gazebo spawn_ackermann_control.launch.py
+```
+
+2. 启动 `/cmd_vel` 转 Ackermann 节点：
+
+```bash
+ros2 run ackermann_control cmd_vel_to_ackermann.py
+```
+
+3. 启动键盘遥控：
+
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+如果系统找不到 `teleop_twist_keyboard`，可以先安装：
+
+```bash
+sudo apt install ros-humble-teleop-twist-keyboard
+```
+
+说明：
+
+- 按键盘后，`teleop_twist_keyboard` 会发布 `/cmd_vel`。
+- `cmd_vel_to_ackermann.py` 会把 `/cmd_vel` 转成前轮转角和后轮速度。
+- Ackermann 小车不能原地旋转，所以要同时给 `linear.x` 和 `angular.z` 才能转弯。
+
 ## Current Progress
 
 目前已经完成：
@@ -164,4 +198,3 @@ git add README.md src/ackermann_description/urdf/ackermann_car.urdf.xacro
 ```bash
 git commit -m "message"
 ```
-
